@@ -1,0 +1,53 @@
+{{template "header" .}}
+<div id="BackLink">
+    <a href="viewProduct?productId={{.Product.ProductId}}">Return to {{.Product.ProductId}}</a>
+</div>
+
+<div id="Catalog">
+    <table>
+        <tr>
+            <td>{{.Product.Description | unEscape}}</td>
+        </tr>
+        <tr>
+            <td><b> {{.Item.ItemId}} </b></td>
+        </tr>
+        <tr>
+            <td>
+                <b>
+                    <font size="4">
+                        {{.Item.Attr1}}
+                        {{.Item.Attr2}}
+                        {{.Item.Attr3}}
+                        {{.Item.Attr4}}
+                        {{.Item.Attr5}}
+                        {{.Product.Name}}
+                    </font>
+                </b>
+            </td>
+        </tr>
+        <tr>
+            <td>{{.Product.Name}}</td>
+        </tr>
+        <tr>
+            <td>
+                {{if le .Item.Quantity 0}}
+                    Back ordered.
+                {{else}}
+                    {{.Item.Quantity}} in stock.
+                {{end}}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                ${{printf "%.2f" .Item.ListPrice}}
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <a class="Button" href="addItemToCart?workingItemId={{.Item.ItemId}}">Add to Cart</a>
+            </td>
+        </tr>
+    </table>
+</div>
+{{template "footer" .}}

@@ -1,0 +1,34 @@
+{{template "header" .}}
+
+<div id="BackLink">
+    <a href="main">Return to Main Menu</a>
+</div>
+
+<div id="Catalog">
+
+    <table>
+        <tr>
+            <th>&nbsp;</th>
+            <th>Product ID</th>
+            <th>Name</th>
+        </tr>
+        {{range .ProductList}}
+            <tr>
+                <td>
+                    <a href="viewProduct?productId={{.ProductId}}">{{.Description | unEscape}}</a>
+                </td>
+                <td><b>
+                        <a href="viewProduct?productId={{.ProductId}}"><font color="BLACK"> {{.ProductId}} </font></a>
+
+                    </b></td>
+                <td>{{.Name}}</td>
+            </tr>
+            {{end}}
+        <tr>
+            <td></td>
+        </tr>
+
+    </table>
+
+</div>
+{{template "footer" .}}

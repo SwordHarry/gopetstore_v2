@@ -1,0 +1,168 @@
+{{template "header" .}}
+
+<ul class="message">
+    <li>Thank you, your order has been submitted.</li>
+</ul>
+
+<div id="BackLink">
+    <<a href="main">Return to Main Menu</a>
+</div>
+
+<div id="Catalog">
+
+    <table>
+        <tr>
+            <th align="center" colspan="2">
+                Order #{{.Order.OrderId}}
+                {{.Order.OrderDate.Format "2006 15:04:05"}}
+            </th>
+        </tr>
+        <tr>
+            <th colspan="2">Payment Details</th>
+        </tr>
+        <tr>
+            <td>Card Type:</td>
+            <td>{{.Order.CardType}}</td>
+        </tr>
+        <tr>
+            <td>Card Number:</td>
+            <td>{{.Order.CreditCard}} * Fake
+                number!
+            </td>
+        </tr>
+        <tr>
+            <td>Expiry Date (MM/YYYY):</td>
+            <td>{{.Order.ExpiryDate}}</td>
+        </tr>
+        <tr>
+            <th colspan="2">Billing Address</th>
+        </tr>
+        <tr>
+            <td>First name:</td>
+            <td>{{.Order.BillToFirstName}}</td>
+        </tr>
+        <tr>
+            <td>Last name:</td>
+            <td>{{.Order.BillToLastName}}</td>
+        </tr>
+        <tr>
+            <td>Address 1:</td>
+            <td>{{.Order.BillAddress1}}</td>
+        </tr>
+        <tr>
+            <td>Address 2:</td>
+            <td>{{.Order.BillAddress2}}</td>
+        </tr>
+        <tr>
+            <td>City:</td>
+            <td>{{.Order.BillCity}}</td>
+        </tr>
+        <tr>
+            <td>State:</td>
+
+            <td>{{.Order.BillState}}</td>
+        </tr>
+        <tr>
+            <td>Zip:</td>
+            <td>{{.Order.BillZip}}</td>
+        </tr>
+        <tr>
+            <td>Country:</td>
+            <td>{{.Order.BillCountry}}</td>
+        </tr>
+        <tr>
+            <th colspan="2">Shipping Address</th>
+        </tr>
+        <tr>
+            <td>First name:</td>
+            <td>{{.Order.ShipToFirstName}}</td>
+        </tr>
+        <tr>
+            <td>Last name:</td>
+            <td>{{.Order.ShipToLastName}}</td>
+        </tr>
+        <tr>
+            <td>Address 1:</td>
+            <td>{{.Order.ShipAddress1}}</td>
+        </tr>
+        <tr>
+            <td>Address 2:</td>
+            <td>{{.Order.ShipAddress2}}</td>
+        </tr>
+        <tr>
+            <td>City:</td>
+            <td>{{.Order.ShipCity}}</td>
+        </tr>
+        <tr>
+            <td>State:</td>
+            <td>{{.Order.ShipState}}</td>
+        </tr>
+        <tr>
+            <td>Zip:</td>
+            <td>{{.Order.ShipZip}}</td>
+        </tr>
+        <tr>
+            <td>Country:</td>
+            <td>{{.Order.ShipCountry}}</td>
+        </tr>
+        <tr>
+            <td>Courier:</td>
+            <td>{{.Order.Courier}}</td>
+        </tr>
+        <tr>
+            <td colspan="2">Status: {{.Order.Status}}</td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table>
+                    <tr>
+                        <th>Item ID</th>
+                        <th>Description</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total Cost</th>
+                    </tr>
+                    {{range .Order.LineItems}}
+                        <tr>
+                            <td>
+                                <a href="viewItem?itemId={{.Item.ItemId}}">
+                                    {{.Item.ItemId}}
+                                </a>
+                            </td>
+                            <td>
+                                {{if .Item}}
+                                    {{range .Item.AttributeList}}
+                                        {{.}}
+                                    {{end}}
+                                    {{.Item.Product.Name}}
+                                {{else}}
+                                    <i>
+                                        description unavailable
+                                    </i>
+                                {{end}}
+                            </td>
+                            <td>
+                                {{.Quantity}}
+                            </td>
+                            <td>
+                                ${{printf "%.2f" .UnitPrice}}
+                            </td>
+                            <td>
+                                ${{printf "%.2f" .Total}}
+                            </td>
+                        </tr>
+                    {{end}}
+                    <tr>
+                        <th colspan="5">
+                            Total:
+                            ${{printf "%.2f" .Order.TotalPrice}}
+                        </th>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+    </table>
+
+</div>
+{{template "footer" .}}

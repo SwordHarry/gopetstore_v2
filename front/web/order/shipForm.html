@@ -1,0 +1,44 @@
+{{template "header" .}}
+<div id="Catalog">
+    <form action="confirmShip" method="post">
+        <table>
+            <tr>
+                <th colspan=2>Shipping Address</th>
+            </tr>
+            <tr>
+                <td>First name:</td>
+                <td><input type="text" name="shipToFirstName" value="{{.Order.ShipToFirstName}}"/></td>
+            </tr>
+            <tr>
+                <td>Last name:</td>
+                <td><input type="text" name="shipToLastName" value="{{.Order.ShipToLastName}}"/></td>
+            </tr>
+            <tr>
+                <td>Address 1:</td>
+                <td><input type="text" size="40" name="shipAddress1" value="{{.Order.ShipAddress1}}"/></td>
+            </tr>
+            <tr>
+                <td>Address 2:</td>
+                <td><input type="text" size="40" name="shipAddress2" value="{{.Order.ShipAddress2}}"/></td>
+            </tr>
+            <tr>
+                <td>City:</td>
+                <td><input type="text" name="shipCity" value="{{.Order.ShipCity}}"/></td>
+            </tr>
+            <tr>
+                <td>State:</td>
+                <td><input type="text" size="4" name="shipState" value="{{.Order.ShipState}}"/></td>
+            </tr>
+            <tr>
+                <td>Zip:</td>
+                <td><input type="text" size="10" name="shipZip" value="{{.Order.ShipZip}}"/></td>
+            </tr>
+            <tr>
+                <td>Country:</td>
+                <td><input type="text" size="15" name="shipCountry" value="{{.Order.ShipCountry}}"/></td>
+            </tr>
+        </table>
+        <input type="submit" name="newOrder" value="Continue" />
+    </form>
+</div>
+{{template "footer" .}}

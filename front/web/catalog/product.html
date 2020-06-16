@@ -1,0 +1,47 @@
+{{template "header" .}}
+<div id="BackLink">
+    <a href="viewCategory?categoryId={{.Product.CategoryId}}">
+        Return to {{.Product.CategoryId}}
+    </a>
+</div>
+<div id="Catalog">
+    <h2>{{.Product.Name}}</h2>
+    <table>
+        <tr>
+            <th>Item ID</th>
+            <th>Product ID</th>
+            <th>Description</th>
+            <th>List Price</th>
+            <th>&nbsp;</th>
+        </tr>
+        {{range .ItemList}}
+            <tr>
+                <td>
+                    <a href="viewItem?itemId={{.ItemId}}">{{.ItemId}}</a>
+                </td>
+                <td>
+                    {{$.Product.ProductId}}
+                </td>
+                <td>
+                    {{.Attr1}}
+                    {{.Attr2}}
+                    {{.Attr3}}
+                    {{.Attr4}}
+                    {{.Attr5}}
+                    {{$.Product.Name}}
+                </td>
+                <td>
+                    {{printf "%.2f" .ListPrice}}
+                </td>
+                <td>
+                    <a class="Button" href="addItemToCart?workingItemId={{.ItemId}}">Add to Cart</a>
+                </td>
+            </tr>
+        {{end}}
+        <tr>
+            <td>
+            </td>
+        </tr>
+    </table>
+</div>
+{{template "footer" .}}

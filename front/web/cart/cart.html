@@ -1,0 +1,81 @@
+{{template "header" .}}
+
+<div id="BackLink">
+    <a href="main">Return to Main Menu</a>
+</div>
+
+<div id="Catalog">
+
+    <div id="Cart">
+
+        <h2>Shopping Cart</h2>
+
+        <form action="viewCart" method="post">
+            <table>
+                <tr>
+                    <th><b>Item ID</b></th>
+                    <th><b>Product ID</b></th>
+                    <th><b>Description</b></th>
+                    <th><b>In Stock?</b></th>
+                    <th><b>Quantity</b></th>
+                    <th><b>List Price</b></th>
+                    <th><b>Total Cost</b></th>
+                    <th>&nbsp;</th>
+                </tr>
+                {{if eq (.Cart.GetNumberOfItems) 0}}
+                    <tr>
+                        <td colspan="8"><b>Your cart is empty.</b></td>
+                    </tr>
+                {{end}}
+                {{range .Cart.ItemList}}
+                    <tr>
+                        <td>
+                            <a href="viewItem?itemId={{.Item.ItemId}}">
+                                {{.Item.ItemId}}
+                            </a>
+                        </td>
+                        <td>
+                            {{.Item.Product.ProductId}}
+                        </td>
+                        <td>
+                            {{range $i,$v := .Item.AttributeList}}
+                                {{$v}}
+                            {{end}}
+                            {{.Item.Product.Name}}
+                        </td>
+                        <td>
+                            {{.InStock}}
+                        </td>
+                        <td>
+                            <input type="text" name="{{.Item.ItemId}}" value="{{.Quantity}}">
+                        </td>
+                        <td>
+                            {{printf "$%.2f" .Item.ListPrice}}
+                        </td>
+                        <td>
+                            {{printf "$%.2f" .Total}}
+                        </td>
+                        <td>
+                            <a class="Button" href="removeItemFromCart?workingItemId={{.Item.ItemId}}">
+                                Remove
+                            </a>
+                        </td>
+                    </tr>
+                {{end}}
+                <tr>
+                    <td colspan="7">Sub Total:
+                        {{printf "$%.2f" (.Cart.GetSubTotal)}}
+                        <input type="submit" value="Update Cart">
+                    </td>
+                    <td>&nbsp;</td>
+                </tr>
+            </table>
+        </form>
+        {{if gt (.Cart.GetNumberOfItems) 0}}
+            <a class="Button" href="viewOrderForm">Proceed to Checkout</a>
+        {{end}}
+    </div>
+    <div id="Separator">&nbsp;</div>
+</div>
+
+{{template "footer" .}}

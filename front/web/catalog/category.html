@@ -1,0 +1,31 @@
+{{template "header" .}}
+
+<div id="BackLink">
+    <a href="main">Return to Main Menu</a>
+</div>
+
+<div id="Catalog">
+
+    <h2>{{.Category.Name}}</h2>
+
+    <table>
+        <tr>
+            <th>Product ID</th>
+            <th>Name</th>
+        </tr>
+        {{range .ProductList}}
+            <tr>
+                <td>
+                    <a href="viewProduct?productId={{.ProductId}}">
+                        {{.ProductId}}
+                    </a>
+                </td>
+                <td>
+                    {{.Name}}
+                </td>
+            </tr>
+        {{end}}
+    </table>
+
+</div>
+{{template "footer" .}}
