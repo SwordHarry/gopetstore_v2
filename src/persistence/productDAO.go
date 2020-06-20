@@ -1,10 +1,13 @@
 package persistence
 
 import (
-	"errors"
 	"gopetstore_v2/src/domain"
 	"gopetstore_v2/src/util"
 )
+
+const getProductListByCategorySQL = "SELECT PRODUCTID,NAME,DESCN as description,CATEGORY as categoryId FROM PRODUCT WHERE CATEGORY = ?"
+const getProductByIdSQL = "SELECT PRODUCTID,NAME,DESCN as description,CATEGORY as categoryId FROM PRODUCT WHERE PRODUCTID = ?"
+const getProductListByKeyword = "select PRODUCTID,NAME,DESCN as description,CATEGORY as categoryId from PRODUCT WHERE lower(name) like ?"
 
 // get product list by category id
 func GetProductListByCategory(categoryId string) ([]*domain.Product, error) {
@@ -16,11 +19,8 @@ func GetProductListByCategory(categoryId string) ([]*domain.Product, error) {
 	if err != nil {
 		return result, err
 	}
-	r := d.Where("category = ?", categoryId).Find(&result)
-	if r.Error != nil {
-		return nil, r.Error
-	}
-	return result, nil
+	err = d.Get(&result, getProductListByCategorySQL, categoryId)
+	return result, err
 }
 
 // get product by product id
@@ -33,14 +33,10 @@ func GetProduct(productId string) (*domain.Product, error) {
 		return nil, err
 	}
 	p := new(domain.Product)
-	r := d.Where("productid = ?", productId).Find(p)
-	if r.Error != nil {
-		return nil, r.Error
+	err = d.Get(p, getProductByIdSQL, productId)
+	if err != nil {
+		return nil, err
 	}
-	if r.RecordNotFound() {
-		return nil, errors.New("can not find the product by this product id")
-	}
-
 	return p, nil
 }
 
@@ -54,9 +50,6 @@ func SearchProductList(keyword string) ([]*domain.Product, error) {
 	if err != nil {
 		return result, err
 	}
-	r := d.Where("lower(name) like ?", keyword).Find(&result)
-	if r.Error != nil {
-		return result, r.Error
-	}
-	return result, nil
+	err = d.Get(&result, getProductListByKeyword, keyword)
+	return result, err
 }

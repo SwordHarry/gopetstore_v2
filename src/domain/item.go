@@ -1,18 +1,18 @@
 package domain
 
 type Item struct {
-	ItemId     string   `gorm:"column:itemid"`
-	ProductId  string   `gorm:"column:productid"`
-	ListPrice  float32  `gorm:"column:listprice"`
-	UnitCost   float32  `gorm:"column:uintcost"`
-	SupplierId int      `gorm:"column:supplier"`
-	Status     string   `gorm:"column:status"`
-	Attr1      string   `gorm:"column:attr1"`
-	Attr2      string   `gorm:"column:attr2"`
-	Attr3      string   `gorm:"column:attr3"`
-	Attr4      string   `gorm:"column:attr4"`
-	Attr5      string   `gorm:"column:attr5"`
-	Product    *Product `gorm:"foreignKey:ProductId"`
+	ItemId     string  `db:"itemid"`
+	ProductId  string  `db:"productid"`
+	ListPrice  float32 `db:"listprice"`
+	UnitCost   float32 `db:"uintcost"`
+	SupplierId int     `db:"supplier"`
+	Status     string  `db:"status"`
+	Attr1      string  `db:"attr1"`
+	Attr2      string  `db:"attr2"`
+	Attr3      string  `db:"attr3"`
+	Attr4      string  `db:"attr4"`
+	Attr5      string  `db:"attr5"`
+	Product    *Product
 	Quantity   int
 }
 

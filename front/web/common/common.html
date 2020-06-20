@@ -27,7 +27,9 @@
                 <img align="middle" name="img_cart" src="images/cart.gif"/>
             </a>
             <img align="middle" src="images/separator.gif"/>
-            {{if .Account}}
+            {{if and .Message (not .Account)}}
+                <a href="login">Sign In</a>
+            {{else if .Account}}
                 <a href="signOut">
                     Sign Out
                 </a>

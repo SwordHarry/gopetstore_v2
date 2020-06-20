@@ -3,8 +3,11 @@ package controller
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
+	"gopetstore_v2/src/config"
+	"gopetstore_v2/src/domain"
 	"gopetstore_v2/src/service"
 	"gopetstore_v2/src/util"
+	"log"
 	"net/http"
 )
 
@@ -17,6 +20,7 @@ func ViewIndex(c *gin.Context) {
 // 跳转 主页
 func ViewMain(c *gin.Context) {
 	a, _ := c.Get("account")
+	log.Printf("%+v", a)
 	c.HTML(http.StatusOK, "main.html", gin.H{
 		"Account": a,
 	})
@@ -47,8 +51,18 @@ func ViewCategory(c *gin.Context) {
 func ViewProduct(c *gin.Context) {
 	productId := util.GetURLParam(c, "productId")[0]
 	p, err := service.GetProduct(productId)
-	// 将 product 存到 context 中，供中间件进行 session 存储
-	c.Set("product", p)
+	// 将 product 存到 session 中
+	s, err := util.GetSession(c.Request)
+	if err != nil {
+		log.Printf("ViewProduct get session error: %v", err.Error())
+	}
+	if s != nil {
+		err = s.Save(config.ProductKey, p, c.Writer, c.Request)
+		if err != nil {
+			log.Printf("ViewProduct session save error: %v", err.Error())
+		}
+	}
+
 	if err != nil {
 		util.ViewError(c, err)
 		return
@@ -74,11 +88,21 @@ func ViewItem(c *gin.Context) {
 		util.ViewError(c, err)
 		return
 	}
-	// 从 中间件中 到 context 中获取 product 并放入页面
-	p, ok := c.Get("product")
-	if !ok {
-		util.ViewError(c, errors.New("can not get the product from session"))
+	// 从 session 中获取 product 并存入页面
+	s, err := util.GetSession(c.Request)
+	if err != nil {
+		util.ViewError(c, err)
 		return
+	}
+	var p *domain.Product
+	if s != nil {
+		r, ok := s.Get(config.ProductKey)
+		if ok {
+			p = r.(*domain.Product)
+		} else {
+			util.ViewError(c, errors.New("ViewItem: type translation to *domain.Product is failed"))
+			return
+		}
 	}
 	a, _ := c.Get("account")
 	c.HTML(http.StatusOK, "item.html", gin.H{

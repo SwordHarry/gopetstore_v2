@@ -13,7 +13,6 @@ const port = ":8082"
 
 func main() {
 	r := gin.Default()
-	r.Use(route.AccountLogin)
 	// 注册自定义函数
 	r.SetFuncMap(template.FuncMap{
 		"unEscape": util.UnEscape,

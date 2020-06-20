@@ -5,10 +5,10 @@
 
         <p>Please enter your username and password.</p>
         <p>Username:
-            <input type="text" name="username">
+            <input type="text" name="username" required>
             <br/>
             Password:
-            <input type="password" name="password">
+            <input type="password" name="password" required>
         </p>
         <input type="submit" name="signIn" value="Login">
         {{if .Message}}

@@ -7,15 +7,23 @@ import (
 
 func RegisterRoute(r *gin.Engine) {
 	r.GET("/", controller.ViewIndex)
-	// catalog
-	r.GET("/main", controller.ViewMain)
-	r.GET("/viewCategory", controller.ViewCategory)
-	r.GET("/viewProduct", SessionMiddleWare("product"), controller.ViewProduct)
-	r.GET("/viewItem", SessionMiddleWare("product"), controller.ViewItem)
-	r.POST("/searchProduct", controller.SearchProductList)
+	// 路由分组，他们需要进行 用户判断
+	g := r.Group("", AccountLogin)
+	{
+		// catalog
+		g.GET("/main", controller.ViewMain)
+		g.GET("/viewCategory", controller.ViewCategory)
+		g.GET("/viewProduct", controller.ViewProduct)
+		g.GET("/viewItem", controller.ViewItem)
+		g.POST("/searchProduct", controller.SearchProductList)
+		// cart
+		// order
+	}
 	// account
 	r.GET("/login", controller.ViewLogin)
 	r.GET("/register", controller.ViewRegister)
-	// cart
-	// order
+	r.POST("/newAccount", controller.Register)
+	r.POST("/login", controller.Login)
+	r.GET("/signOut", controller.SignOut)
+	r.GET("/editAccount", controller.ViewEditAccount)
 }
