@@ -6,6 +6,7 @@ import (
 	"gopetstore_v2/src/domain"
 	"gopetstore_v2/src/service"
 	"gopetstore_v2/src/util"
+	"log"
 	"net/http"
 )
 
@@ -98,7 +99,7 @@ func SignOut(c *gin.Context) {
 }
 
 // register
-func Register(c *gin.Context) {
+func NewAccount(c *gin.Context) {
 	accountInfo := getAccountFromInfoForm(c)
 	repeatedPassword := c.PostForm("repeatedPassword")
 	if accountInfo.Password != repeatedPassword {
@@ -128,7 +129,6 @@ func Register(c *gin.Context) {
 	} else {
 		c.HTML(http.StatusOK, "registerForm.html", gin.H{
 			"Message":    "该用户名已存在",
-			"Account":    accountInfo,
 			"Languages":  languages,
 			"Categories": categories,
 		})
@@ -136,6 +136,29 @@ func Register(c *gin.Context) {
 }
 
 // update account
+func ConfirmEdit(c *gin.Context) {
+	a := getAccountFromInfoForm(c)
+	err := service.UpdateAccount(a)
+	if err != nil {
+		util.ViewError(c, err)
+		return
+	}
+	// 修改成功后需要重置 session
+	s, err := util.GetSession(c.Request)
+	if err != nil {
+		log.Printf("ConfirmEdit GetSession error: %v", err.Error())
+	}
+	if s != nil {
+		err = s.Save("account", a, c.Writer, c.Request)
+		if err != nil {
+			log.Printf("ConfirmEdit Save error: %v", err.Error())
+		}
+	}
+	c.HTML(http.StatusOK, "editAccountForm.html", gin.H{
+		"Message": "修改成功",
+		"Account": a,
+	})
+}
 
 // get account info from form
 func getAccountFromInfoForm(c *gin.Context) *domain.Account {

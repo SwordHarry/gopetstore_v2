@@ -1,4 +1,4 @@
-# goPetStore: use gin and db
+# goPetStore: use gin and sqlx
 使用 go语言 实现的 jpetstore
 通过重构原无框架版，使用 gin 和 sqlx 进行框架开发
 原无框架版：https://github.com/SwordHarry/gopetstore

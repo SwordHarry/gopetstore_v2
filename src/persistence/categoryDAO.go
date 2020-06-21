@@ -5,8 +5,8 @@ import (
 	"gopetstore_v2/src/util"
 )
 
-const getCategoryListSQL = "SELECT CATID AS categoryId,NAME,DESCN AS description FROM CATEGORY"
-const getCategoryByIdSQL = "SELECT CATID AS categoryId,NAME,DESCN AS description FROM CATEGORY WHERE CATID = ?"
+const getCategoryListSQL = "SELECT CATID as catid,NAME as catname,descn FROM CATEGORY"
+const getCategoryByIdSQL = "SELECT CATID as catid,NAME as catname,descn FROM CATEGORY WHERE CATID = ?"
 
 // 通过 id 获取指定的 category
 func GetCategory(categoryId string) (*domain.Category, error) {

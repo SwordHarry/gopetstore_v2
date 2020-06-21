@@ -9,10 +9,6 @@ type Product struct {
 	Description string `db:"descn"`
 }
 
-func (*Product) TableName() string {
-	return "product"
-}
-
 func init() {
 	gob.Register(&Product{})
 }

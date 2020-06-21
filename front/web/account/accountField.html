@@ -56,9 +56,15 @@
             <td>
                 <select name="languagePreference" id="languagePreference">
                     {{range .Languages}}
-                        {{if $.Account}}{{if eq ($.Account.LanguagePreference) .}}
-                            <option selected>{{.}}</option>{{end}}{{end}}
-                        <option>{{.}}</option>
+                        {{if $.Account}}
+                            {{if eq ($.Account.LanguagePreference) .}}
+                                <option value="{{.}}" selected>{{.}}</option>
+                            {{else}}
+                                <option value="{{.}}">{{.}}</option>
+                            {{end}}
+                        {{else}}
+                            <option value="{{.}}">{{.}}</option>
+                        {{end}}
                     {{end}}
                 </select>
             </td>
@@ -68,9 +74,15 @@
             <td>
                 <select name="favouriteCategoryId" id="favouriteCategoryId">
                     {{range .Categories}}
-                        {{if $.Account}}{{if eq ($.Account.FavouriteCategoryId) .}}
-                            <option selected>{{.}}</option>{{end}}{{end}}
-                        <option>{{.}}</option>
+                        {{if $.Account}}
+                            {{if eq ($.Account.FavouriteCategoryId) .}}
+                                <option value="{{.}}" selected>{{.}}</option>
+                            {{else}}
+                                <option value="{{.}}">{{.}}</option>
+                            {{end}}
+                        {{else}}
+                            <option value="{{.}}">{{.}}</option>
+                        {{end}}
                     {{end}}
                 </select>
             </td>

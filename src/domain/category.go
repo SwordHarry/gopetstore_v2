@@ -2,6 +2,6 @@ package domain
 
 type Category struct {
 	CategoryId  string `db:"catid"`
-	Name        string `db:"name"`
+	Name        string `db:"catname"`
 	Description string `db:"descn"`
 }

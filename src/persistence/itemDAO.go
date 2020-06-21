@@ -5,16 +5,16 @@ import (
 	"gopetstore_v2/src/util"
 )
 
-const getItemByIdSQL = `select I.ITEMID,LISTPRICE,UNITCOST,SUPPLIER AS supplierId,I.PRODUCTID AS productId,
-NAME AS productName,DESCN AS productDescription,CATEGORY AS CategoryId,STATUS,
-IFNULL(ATTR1, "") AS attribute1,IFNULL(ATTR2, "") AS attribute2,IFNULL(ATTR3, "") AS attribute3,
-IFNULL(ATTR4, "") AS attribute4,IFNULL(ATTR5, "") AS attribute5,QTY AS quantity from ITEM I, INVENTORY V, PRODUCT P 
+const getItemByIdSQL = `select I.ITEMID as itemid,LISTPRICE as listprice,UNITCOST as unitcost,SUPPLIER AS supplier,I.PRODUCTID AS productid,
+NAME AS name,DESCN AS descn,CATEGORY AS category,STATUS as status,
+IFNULL(ATTR1, "") AS attr1,IFNULL(ATTR2, "") AS attr2,IFNULL(ATTR3, "") AS attr3,
+IFNULL(ATTR4, "") AS attr4,IFNULL(ATTR5, "") AS attr5,QTY AS quantity from ITEM I, INVENTORY V, PRODUCT P 
 where P.PRODUCTID = I.PRODUCTID and I.ITEMID = V.ITEMID and I.ITEMID=?`
 
-const getItemListByProductIdSQL = `SELECT I.ITEMID,LISTPRICE,UNITCOST,SUPPLIER AS supplierId,I.PRODUCTID AS productId,
-NAME AS productName,DESCN AS productDescription,CATEGORY AS categoryId,STATUS,
-IFNULL(ATTR1, "") AS attribute1,IFNULL(ATTR2, "") AS attribute2,IFNULL(ATTR3, "") AS attribute3,
-IFNULL(ATTR4, "") AS attribute4,IFNULL(ATTR5, "") AS attribute5 FROM ITEM I, PRODUCT P 
+const getItemListByProductIdSQL = `SELECT I.ITEMID as itemid,LISTPRICE as listprice,UNITCOST as unitcost,SUPPLIER AS supplier,I.PRODUCTID AS productid,
+NAME AS name,DESCN AS descn,CATEGORY AS category,STATUS as status,
+IFNULL(ATTR1, "") AS attr1,IFNULL(ATTR2, "") AS attr2,IFNULL(ATTR3, "") AS attr3,
+IFNULL(ATTR4, "") AS attr4,IFNULL(ATTR5, "") AS attr5 FROM ITEM I, PRODUCT P 
 WHERE P.PRODUCTID = I.PRODUCTID AND I.PRODUCTID = ?`
 const getInventoryByItemIdSQL = `SELECT QTY AS QUANTITY FROM INVENTORY WHERE ITEMID = ?`
 const updateInventoryByItemIdSQl = `UPDATE INVENTORY SET QTY = QTY - ? WHERE ITEMID = ?`
@@ -46,7 +46,7 @@ func GetItemListByProduct(productId string) ([]*domain.Item, error) {
 	if err != nil {
 		return result, err
 	}
-	// 查询外键相关的实体
-	err = d.Get(&result, getItemListByProductIdSQL, productId)
+	// 查询外键相关的实体，item 中 有 product
+	err = d.Select(&result, getItemListByProductIdSQL, productId)
 	return result, err
 }

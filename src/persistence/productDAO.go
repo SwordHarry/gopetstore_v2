@@ -5,9 +5,9 @@ import (
 	"gopetstore_v2/src/util"
 )
 
-const getProductListByCategorySQL = "SELECT PRODUCTID,NAME,DESCN as description,CATEGORY as categoryId FROM PRODUCT WHERE CATEGORY = ?"
-const getProductByIdSQL = "SELECT PRODUCTID,NAME,DESCN as description,CATEGORY as categoryId FROM PRODUCT WHERE PRODUCTID = ?"
-const getProductListByKeyword = "select PRODUCTID,NAME,DESCN as description,CATEGORY as categoryId from PRODUCT WHERE lower(name) like ?"
+const getProductListByCategorySQL = "SELECT productid,NAME as name,DESCN as descn,CATEGORY as category FROM PRODUCT WHERE CATEGORY = ?"
+const getProductByIdSQL = "SELECT productid,name,descn,category FROM PRODUCT WHERE PRODUCTID = ?"
+const getProductListByKeyword = "select productid,name,descn,category from PRODUCT WHERE lower(name) like ?"
 
 // get product list by category id
 func GetProductListByCategory(categoryId string) ([]*domain.Product, error) {
@@ -19,7 +19,8 @@ func GetProductListByCategory(categoryId string) ([]*domain.Product, error) {
 	if err != nil {
 		return result, err
 	}
-	err = d.Get(&result, getProductListByCategorySQL, categoryId)
+	// 若返回的是多行数据，则要用 Select
+	err = d.Select(&result, getProductListByCategorySQL, categoryId)
 	return result, err
 }
 
@@ -50,6 +51,6 @@ func SearchProductList(keyword string) ([]*domain.Product, error) {
 	if err != nil {
 		return result, err
 	}
-	err = d.Get(&result, getProductListByKeyword, keyword)
+	err = d.Select(&result, getProductListByKeyword, keyword)
 	return result, err
 }

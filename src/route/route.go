@@ -17,13 +17,17 @@ func RegisterRoute(r *gin.Engine) {
 		g.GET("/viewItem", controller.ViewItem)
 		g.POST("/searchProduct", controller.SearchProductList)
 		// cart
+		g.GET("/viewCart", controller.ViewCart)
 		// order
 	}
 	// account
 	r.GET("/login", controller.ViewLogin)
 	r.GET("/register", controller.ViewRegister)
-	r.POST("/newAccount", controller.Register)
+	r.POST("/newAccount", controller.NewAccount)
 	r.POST("/login", controller.Login)
 	r.GET("/signOut", controller.SignOut)
 	r.GET("/editAccount", controller.ViewEditAccount)
+	r.POST("/confirmEdit", controller.ConfirmEdit)
+	// cart
+
 }

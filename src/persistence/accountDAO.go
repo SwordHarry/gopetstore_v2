@@ -1,49 +1,57 @@
 package persistence
 
 import (
+	"database/sql"
 	"errors"
 	"gopetstore_v2/src/domain"
 	"gopetstore_v2/src/util"
 )
 
-const getAccountByUsernameSQL = `SELECT SIGNON.USERNAME,ACCOUNT.EMAIL,ACCOUNT.FIRSTNAME,ACCOUNT.LASTNAME,ACCOUNT.STATUS,ACCOUNT.ADDR1 AS address1,
-ACCOUNT.ADDR2 AS address2,ACCOUNT.CITY,ACCOUNT.STATE,ACCOUNT.ZIP,ACCOUNT.COUNTRY,ACCOUNT.PHONE,PROFILE.LANGPREF AS languagePreference,
-PROFILE.FAVCATEGORY AS favouriteCategoryId,PROFILE.MYLISTOPT AS listOption,PROFILE.BANNEROPT AS bannerOption,BANNERDATA.BANNERNAME 
-FROM ACCOUNT, PROFILE, SIGNON, BANNERDATA
-WHERE ACCOUNT.USERID = ? AND SIGNON.USERNAME = ACCOUNT.USERID AND PROFILE.USERID = ACCOUNT.USERID AND PROFILE.FAVCATEGORY = BANNERDATA.FAVCATEGORY`
+const getAccountByUsernameSQL = `SELECT SIGNON.USERNAME as userid,ACCOUNT.EMAIL as email,ACCOUNT.FIRSTNAME as firstname,
+ACCOUNT.LASTNAME as lastname,ACCOUNT.STATUS as status,ACCOUNT.ADDR1 AS addr1,ACCOUNT.ADDR2 AS addr2,ACCOUNT.CITY as city,
+ACCOUNT.STATE as state,ACCOUNT.ZIP as zip,ACCOUNT.COUNTRY as country,ACCOUNT.PHONE as phone,PROFILE.LANGPREF AS langpref,
+PROFILE.FAVCATEGORY AS favcategory,PROFILE.MYLISTOPT AS mylistopt,PROFILE.BANNEROPT AS banneropt,
+BANNERDATA.BANNERNAME as bannername FROM ACCOUNT, PROFILE, SIGNON, BANNERDATA
+WHERE ACCOUNT.USERID = ? AND SIGNON.USERNAME = ACCOUNT.USERID AND PROFILE.USERID = ACCOUNT.USERID AND
+ PROFILE.FAVCATEGORY = BANNERDATA.FAVCATEGORY`
 
 // get account by userName and password from signOn, account, bannerData
-const getAccountByUsernameAndPasswordSQL = `SELECT SIGNON.USERNAME,ACCOUNT.EMAIL,ACCOUNT.FIRSTNAME,ACCOUNT.LASTNAME,
-ACCOUNT.STATUS,ACCOUNT.ADDR1 AS address1,ACCOUNT.ADDR2 AS address2,ACCOUNT.CITY,ACCOUNT.STATE,ACCOUNT.ZIP,
-ACCOUNT.COUNTRY,ACCOUNT.PHONE,PROFILE.LANGPREF AS languagePreference,PROFILE.FAVCATEGORY AS favouriteCategoryId,
-PROFILE.MYLISTOPT AS listOption,PROFILE.BANNEROPT AS bannerOption,BANNERDATA.BANNERNAME FROM ACCOUNT, PROFILE, SIGNON, BANNERDATA 
+const getAccountByUsernameAndPasswordSQL = `SELECT SIGNON.USERNAME as userid,ACCOUNT.EMAIL as email,
+ACCOUNT.FIRSTNAME as firstname,ACCOUNT.LASTNAME as lastname,ACCOUNT.STATUS as status,ACCOUNT.ADDR1 AS addr1,
+ACCOUNT.ADDR2 AS addr2,ACCOUNT.CITY as city,ACCOUNT.STATE as state,ACCOUNT.ZIP as zip,ACCOUNT.COUNTRY as country,
+ACCOUNT.PHONE as phone,PROFILE.LANGPREF AS langpref,PROFILE.FAVCATEGORY AS favcategory,PROFILE.MYLISTOPT AS mylistopt,
+PROFILE.BANNEROPT AS banneropt,BANNERDATA.BANNERNAME as bannername FROM ACCOUNT, PROFILE, SIGNON, BANNERDATA 
 WHERE ACCOUNT.USERID = ? AND SIGNON.PASSWORD = ? AND SIGNON.USERNAME = ACCOUNT.USERID AND 
 PROFILE.USERID = ACCOUNT.USERID AND PROFILE.FAVCATEGORY = BANNERDATA.FAVCATEGORY`
 
 // Insert
 // insert account from account
 const insertAccountSQL = `INSERT INTO ACCOUNT (EMAIL, FIRSTNAME, LASTNAME, STATUS, ADDR1, ADDR2, CITY, STATE, ZIP, COUNTRY, PHONE, USERID) 
-VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+VALUES(:email, :firstname, :lastname, :status, :addr1, :addr2, :city, :state, :zip, :country, :phone, :userid)`
 
 // insert profile from profile
-const insertProfileSQL = `INSERT INTO PROFILE (LANGPREF, FAVCATEGORY, USERID, mylistopt, banneropt) VALUES (?, ?, ?, ?, ?)`
+const insertProfileSQL = `INSERT INTO PROFILE (LANGPREF, FAVCATEGORY, USERID, mylistopt, banneropt) 
+VALUES (:langpref, :favcategory, :userid, :mylistopt, :banneropt)`
 
 // insert username and password from signOn
-const insertSigOnSQL = `INSERT INTO SIGNON (USERNAME,PASSWORD) VALUES (?, ?)`
+const insertSigOnSQL = `INSERT INTO SIGNON (USERNAME,PASSWORD) VALUES (:userid, :password)`
 
 // Update
 // update account from account
-const updateAccountSQL = `UPDATE ACCOUNT SET EMAIL = ?,FIRSTNAME = ?,LASTNAME = ?,STATUS = ?,ADDR1 = ?,ADDR2 = ?,
-CITY = ?,STATE = ?,ZIP = ?,COUNTRY = ?,PHONE = ? WHERE USERID = ?`
+const updateAccountSQL = `UPDATE ACCOUNT SET EMAIL = :email,FIRSTNAME = :firstname,LASTNAME = :lastname,
+STATUS = :status,ADDR1 = :addr1,ADDR2 = :addr2,CITY = :city,STATE = :state,ZIP = :zip,
+COUNTRY = :country,PHONE = :phone WHERE USERID = :userid`
 
 // update profile from profile
-const updateProfileSQL = `UPDATE PROFILE SET LANGPREF = ?, FAVCATEGORY = ?,mylistopt = ?,banneropt = ? WHERE USERID = ?`
+const updateProfileSQL = `UPDATE PROFILE SET LANGPREF = :langpref, FAVCATEGORY = :favcategory,mylistopt = :mylistopt,
+banneropt = :banneropt WHERE USERID = :userid`
 
 // update password by userName from signOn
-const updateSigOnSQL = `UPDATE SIGNON SET PASSWORD = ? WHERE USERNAME = ?`
+const updateSigOnSQL = `UPDATE SIGNON SET PASSWORD = :password WHERE USERNAME = :userid`
 
 // query
 // get account by user name
+// 找不到则意味着可以注册，而不是报错
 func GetAccountByUserName(userName string) (*domain.Account, error) {
 	d, err := util.GetConnection()
 	defer func() {
@@ -57,6 +65,9 @@ func GetAccountByUserName(userName string) (*domain.Account, error) {
 	// 使用 sqlx 的 Get api， 减少代码量
 	err = d.Get(a, getAccountByUsernameSQL, userName)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return a, nil
@@ -75,6 +86,10 @@ func GetAccountByUserNameAndPassword(userName string, password string) (*domain.
 	// 这里涉及 account, signon, profile, bannerdata 四个表的连接
 	err = d.Get(a, getAccountByUsernameAndPasswordSQL, userName, password)
 	if err != nil {
+		// 账号或密码错误
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return a, nil
@@ -90,17 +105,14 @@ func InsertAccount(a *domain.Account) error {
 	if err != nil {
 		return err
 	}
-	r, err := d.Exec(insertAccountSQL, a.Email, a.FirstName, a.LastName, a.Status,
-		a.Address1, a.Address2, a.City, a.State, a.Country, a.Phone, a.UserName)
+	// 使用 NamedExec，在 sql 用 :param 取代 ? 减少代码量
+	r, err := d.NamedExec(insertAccountSQL, a)
 	if err != nil {
 		return err
 	}
-	row, err := r.RowsAffected()
+	_, err = r.RowsAffected()
 	if err != nil {
 		return err
-	}
-	if row == 0 {
-		return errors.New("can not insert account by this user name:" + a.UserName)
 	}
 	return nil
 }
@@ -114,7 +126,7 @@ func InsertProfile(a *domain.Account) error {
 	if err != nil {
 		return err
 	}
-	r, err := d.Exec(insertProfileSQL, a.LanguagePreference, a.FavouriteCategoryId, a.UserName, a.ListOption, a.BannerOption)
+	r, err := d.NamedExec(insertProfileSQL, a)
 	if err != nil {
 		return err
 	}
@@ -137,7 +149,7 @@ func InsertSignOn(a *domain.Account) error {
 	if err != nil {
 		return err
 	}
-	r, err := d.Exec(insertSigOnSQL, a.UserName, a.Password)
+	r, err := d.NamedExec(insertSigOnSQL, a)
 	if err != nil {
 		return err
 	}
@@ -157,8 +169,8 @@ func UpdateAccount(a *domain.Account) error {
 	if err != nil {
 		return err
 	}
-	r, err := d.Exec(updateAccountSQL, a.Email, a.FirstName, a.LastName, a.Status, a.Address1, a.Address2,
-		a.City, a.State, a.Zip, a.Country, a.Phone, a.UserName)
+	// NamedExec 根据结构体标签 或者 map 进行更新
+	r, err := d.NamedExec(updateAccountSQL, a)
 	if err != nil {
 		return err
 	}
@@ -167,7 +179,7 @@ func UpdateAccount(a *domain.Account) error {
 		return err
 	}
 	if row == 0 {
-		return errors.New("can not update account by this user name:" + a.UserName)
+		return errors.New("UpdateAccount can not update account by this user name:" + a.UserName)
 	}
 	return nil
 }
@@ -177,16 +189,13 @@ func UpdateProfile(a *domain.Account) error {
 	if err != nil {
 		return err
 	}
-	r, err := d.Exec(updateProfileSQL, a.LanguagePreference, a.FavouriteCategoryId, a.ListOption, a.BannerOption, a.UserName)
+	r, err := d.NamedExec(updateProfileSQL, a)
 	if err != nil {
 		return err
 	}
-	row, err := r.RowsAffected()
+	_, err = r.RowsAffected()
 	if err != nil {
 		return err
-	}
-	if row == 0 {
-		return errors.New("can not update account by this user name:" + a.UserName)
 	}
 	return nil
 }
@@ -196,16 +205,13 @@ func UpdateSignOn(a *domain.Account) error {
 	if err != nil {
 		return err
 	}
-	r, err := d.Exec(updateSigOnSQL, a.Password, a.UserName)
+	r, err := d.NamedExec(updateSigOnSQL, a)
 	if err != nil {
 		return err
 	}
-	row, err := r.RowsAffected()
+	_, err = r.RowsAffected()
 	if err != nil {
 		return err
-	}
-	if row == 0 {
-		return errors.New("can not update account by this user name:" + a.UserName)
 	}
 	return nil
 }
