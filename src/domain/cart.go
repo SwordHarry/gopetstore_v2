@@ -1,9 +1,10 @@
 package domain
 
-import "encoding/gob"
+import (
+	"encoding/gob"
+)
 
 // 由于购物车没有数据库模块，故维护一个集合，加快查询速度
-// list 和 map 需要同步，故不暴露
 type Cart struct {
 	ItemList []*CartItem
 }
@@ -23,7 +24,6 @@ func NewCart() *Cart {
 
 // 判断购物车中是否有指定id商品
 func (c *Cart) ContainItem(itemId string) (*CartItem, bool) {
-	//_, ok := c.ItemMap[itemId]
 	for _, ci := range c.ItemList {
 		if ci.Item.ItemId == itemId {
 			return ci, true
@@ -33,12 +33,12 @@ func (c *Cart) ContainItem(itemId string) (*CartItem, bool) {
 }
 
 // 往购物车添加商品
-func (c *Cart) AddItem(item Item, isInStock bool) {
+func (c *Cart) AddItem(item *Item, isInStock bool) {
 	if ci, ok := c.ContainItem(item.ItemId); ok {
 		ci.IncrementQuantity()
 	} else {
 		ci := &CartItem{
-			Item:     &item,
+			Item:     item,
 			Quantity: 1,
 			InStock:  isInStock,
 			Total:    0,
@@ -75,9 +75,11 @@ func (c *Cart) IncrementQuantityByItemId(itemId string) {
 
 // 直接设置该项的数量
 func (c *Cart) SetQuantityByItemId(itemId string, quantity int) {
-	ci, _ := c.ContainItem(itemId)
-	ci.Quantity = quantity
-	ci.CalculateTotal()
+	ci, ok := c.ContainItem(itemId)
+	if ok {
+		ci.Quantity = quantity
+		ci.CalculateTotal()
+	}
 }
 
 // 获取购物车总价格

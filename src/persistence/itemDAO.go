@@ -50,3 +50,23 @@ func GetItemListByProduct(productId string) ([]*domain.Item, error) {
 	err = d.Select(&result, getItemListByProductIdSQL, productId)
 	return result, err
 }
+
+// get inventory by item id
+func GetInventoryQuantity(itemId string) (result int, err error) {
+	d, err := util.GetConnection()
+	if err != nil {
+		return -1, err
+	}
+	r, err := d.Queryx(getInventoryByItemIdSQL, itemId)
+	if err != nil {
+		return -1, err
+	}
+	defer r.Close()
+	if r.Next() {
+		err = r.Scan(&result)
+		if err != nil {
+			return -1, err
+		}
+	}
+	return
+}

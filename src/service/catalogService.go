@@ -4,6 +4,7 @@ package service
 import (
 	"gopetstore_v2/src/domain"
 	"gopetstore_v2/src/persistence"
+	"log"
 )
 
 // get category by id
@@ -34,4 +35,14 @@ func GetItem(itemId string) (*domain.Item, error) {
 // search product list by keyword
 func SearchProductList(keyword string) ([]*domain.Product, error) {
 	return persistence.SearchProductList(keyword)
+}
+
+// is item in stock
+func IsItemInStock(itemId string) bool {
+	flag, err := persistence.GetInventoryQuantity(itemId)
+	if err != nil {
+		log.Printf("error: %v", err.Error())
+		return false
+	}
+	return flag > 0
 }

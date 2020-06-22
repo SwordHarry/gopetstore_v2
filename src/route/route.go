@@ -18,6 +18,9 @@ func RegisterRoute(r *gin.Engine) {
 		g.POST("/searchProduct", controller.SearchProductList)
 		// cart
 		g.GET("/viewCart", controller.ViewCart)
+		g.GET("/addItemToCart", controller.AddItemToCart)
+		g.POST("/viewCart", controller.UpdateCart)
+		g.GET("/removeItemFromCart", controller.RemoveItemFromCart)
 		// order
 	}
 	// account

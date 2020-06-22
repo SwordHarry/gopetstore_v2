@@ -2,7 +2,7 @@ package persistence
 
 import (
 	"database/sql"
-	"errors"
+	"github.com/jmoiron/sqlx"
 	"gopetstore_v2/src/domain"
 	"gopetstore_v2/src/util"
 )
@@ -98,120 +98,126 @@ func GetAccountByUserNameAndPassword(userName string, password string) (*domain.
 // insert
 // 插入 account 数据表
 func InsertAccount(a *domain.Account) error {
-	d, err := util.GetConnection()
-	defer func() {
-		_ = d.Close()
-	}()
-	if err != nil {
-		return err
-	}
-	// 使用 NamedExec，在 sql 用 :param 取代 ? 减少代码量
-	r, err := d.NamedExec(insertAccountSQL, a)
-	if err != nil {
-		return err
-	}
-	_, err = r.RowsAffected()
-	if err != nil {
-		return err
-	}
-	return nil
+	// 使用事务，插入时如果失败则回滚
+	return util.ExecTransaction(func(tx *sqlx.Tx) error {
+		_, err := tx.NamedExec(insertAccountSQL, a)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+		_, err = tx.NamedExec(insertProfileSQL, a)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+		_, err = tx.NamedExec(insertSigOnSQL, a)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+		return nil
+	})
+
 }
 
-// 插入 profile 数据表
-func InsertProfile(a *domain.Account) error {
-	d, err := util.GetConnection()
-	defer func() {
-		_ = d.Close()
-	}()
-	if err != nil {
-		return err
-	}
-	r, err := d.NamedExec(insertProfileSQL, a)
-	if err != nil {
-		return err
-	}
-	row, err := r.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if row == 0 {
-		return errors.New("can not insert profile by this user name:" + a.UserName)
-	}
-	return nil
-}
-
-// 插入 signon 数据表
-func InsertSignOn(a *domain.Account) error {
-	d, err := util.GetConnection()
-	defer func() {
-		_ = d.Close()
-	}()
-	if err != nil {
-		return err
-	}
-	r, err := d.NamedExec(insertSigOnSQL, a)
-	if err != nil {
-		return err
-	}
-	row, err := r.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if row == 0 {
-		return errors.New("can not insert sign on by this user name:" + a.UserName)
-	}
-	return nil
-}
+//
+//// 插入 profile 数据表
+//func InsertProfile(a *domain.Account) error {
+//	d, err := util.GetConnection()
+//	defer func() {
+//		_ = d.Close()
+//	}()
+//	if err != nil {
+//		return err
+//	}
+//	r, err := d.NamedExec(insertProfileSQL, a)
+//	if err != nil {
+//		return err
+//	}
+//	row, err := r.RowsAffected()
+//	if err != nil {
+//		return err
+//	}
+//	if row == 0 {
+//		return errors.New("can not insert profile by this user name:" + a.UserName)
+//	}
+//	return nil
+//}
+//
+//// 插入 signon 数据表
+//func InsertSignOn(a *domain.Account) error {
+//	d, err := util.GetConnection()
+//	defer func() {
+//		_ = d.Close()
+//	}()
+//	if err != nil {
+//		return err
+//	}
+//	r, err := d.NamedExec(insertSigOnSQL, a)
+//	if err != nil {
+//		return err
+//	}
+//	row, err := r.RowsAffected()
+//	if err != nil {
+//		return err
+//	}
+//	if row == 0 {
+//		return errors.New("can not insert sign on by this user name:" + a.UserName)
+//	}
+//	return nil
+//}
 
 // update
 func UpdateAccount(a *domain.Account) error {
-	d, err := util.GetConnection()
-	if err != nil {
-		return err
-	}
-	// NamedExec 根据结构体标签 或者 map 进行更新
-	r, err := d.NamedExec(updateAccountSQL, a)
-	if err != nil {
-		return err
-	}
-	row, err := r.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if row == 0 {
-		return errors.New("UpdateAccount can not update account by this user name:" + a.UserName)
-	}
-	return nil
+	return util.ExecTransaction(func(tx *sqlx.Tx) error {
+		_, err := tx.NamedExec(updateAccountSQL, a)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+		_, err = tx.NamedExec(updateProfileSQL, a)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+		_, err = tx.NamedExec(updateSigOnSQL, a)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+		return nil
+	})
 }
 
-func UpdateProfile(a *domain.Account) error {
-	d, err := util.GetConnection()
-	if err != nil {
-		return err
-	}
-	r, err := d.NamedExec(updateProfileSQL, a)
-	if err != nil {
-		return err
-	}
-	_, err = r.RowsAffected()
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func UpdateSignOn(a *domain.Account) error {
-	d, err := util.GetConnection()
-	if err != nil {
-		return err
-	}
-	r, err := d.NamedExec(updateSigOnSQL, a)
-	if err != nil {
-		return err
-	}
-	_, err = r.RowsAffected()
-	if err != nil {
-		return err
-	}
-	return nil
-}
+//
+//func UpdateProfile(a *domain.Account) error {
+//	d, err := util.GetConnection()
+//	if err != nil {
+//		return err
+//	}
+//	r, err := d.NamedExec(updateProfileSQL, a)
+//	if err != nil {
+//		return err
+//	}
+//	_, err = r.RowsAffected()
+//	if err != nil {
+//		return err
+//	}
+//	return nil
+//}
+//
+//func UpdateSignOn(a *domain.Account) error {
+//	d, err := util.GetConnection()
+//	if err != nil {
+//		return err
+//	}
+//	r, err := d.NamedExec(updateSigOnSQL, a)
+//	if err != nil {
+//		return err
+//	}
+//	_, err = r.RowsAffected()
+//	if err != nil {
+//		return err
+//	}
+//	return nil
+//}

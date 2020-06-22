@@ -38,16 +38,18 @@
                             {{.Item.Product.ProductId}}
                         </td>
                         <td>
-                            {{range $i,$v := .Item.AttributeList}}
-                                {{$v}}
-                            {{end}}
+                            {{.Item.Attr1}}
+                            {{.Item.Attr2}}
+                            {{.Item.Attr3}}
+                            {{.Item.Attr4}}
+                            {{.Item.Attr5}}
                             {{.Item.Product.Name}}
                         </td>
                         <td>
                             {{.InStock}}
                         </td>
                         <td>
-                            <input type="text" name="{{.Item.ItemId}}" value="{{.Quantity}}">
+                            <input type="number" name="{{.Item.ItemId}}" value="{{.Quantity}}">
                         </td>
                         <td>
                             {{printf "$%.2f" .Item.ListPrice}}

@@ -20,7 +20,6 @@ func ViewIndex(c *gin.Context) {
 // 跳转 主页
 func ViewMain(c *gin.Context) {
 	a, _ := c.Get("account")
-	log.Printf("%+v", a)
 	c.HTML(http.StatusOK, "main.html", gin.H{
 		"Account": a,
 	})

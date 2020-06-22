@@ -2,7 +2,7 @@ package domain
 
 // 购物项，单价和数量
 type CartItem struct {
-	Item     *Item
+	*Item
 	Quantity int
 	InStock  bool
 	Total    float32

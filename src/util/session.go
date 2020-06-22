@@ -22,10 +22,14 @@ var sessionStore = sessions.NewFilesystemStore("", []byte(secretKey))
 
 const sessionName = "session"
 
-// 初始化，通过这个获取唯一 session
-func GetSession(r *http.Request) (*Session, error) {
+func init() {
 	// 设置 fileSystemStore 的最大存储长度，防止溢出
 	sessionStore.MaxLength(5 * 4096)
+}
+
+// 初始化，通过这个获取唯一 session
+func GetSession(r *http.Request) (*Session, error) {
+
 	s, err := sessionStore.Get(r, sessionName)
 	if err != nil {
 		return nil, err

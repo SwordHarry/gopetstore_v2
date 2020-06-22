@@ -90,6 +90,8 @@ func SignOut(c *gin.Context) {
 	}
 	if s != nil {
 		err = s.Del(config.AccountKey, c.Writer, c.Request)
+		err = s.Del(config.CartKey, c.Writer, c.Request)
+		err = s.Del(config.OrderKey, c.Writer, c.Request)
 		if err != nil {
 			util.ViewError(c, err)
 			return
