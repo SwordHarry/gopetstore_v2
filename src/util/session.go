@@ -2,6 +2,7 @@ package util
 
 import (
 	"github.com/gorilla/sessions"
+	"gopetstore_v2/src/config"
 	"gopetstore_v2/src/domain"
 	"log"
 	"net/http"
@@ -65,7 +66,7 @@ func GetAccountFromSession(r *http.Request) *domain.Account {
 		return nil
 	}
 	if s != nil {
-		r, ok := s.Get("account")
+		r, ok := s.Get(config.AccountKey)
 		if !ok {
 			// account 不存在，已登出
 			return nil
@@ -82,7 +83,7 @@ func GetAccountFromSession(r *http.Request) *domain.Account {
 }
 
 // 从session中获取cart
-func GetCartFromSession(w http.ResponseWriter, r *http.Request, callback func(cart *domain.Cart)) *domain.Cart {
+func GetCartFromSessionAndSave(w http.ResponseWriter, r *http.Request, callback func(cart *domain.Cart)) *domain.Cart {
 	// 使用 session 存储 cart 购物车
 	s, err := GetSession(r)
 	if err != nil {
@@ -91,7 +92,7 @@ func GetCartFromSession(w http.ResponseWriter, r *http.Request, callback func(ca
 	var cart *domain.Cart
 	// 成功生成 session
 	if s != nil {
-		c, ok := s.Get("cart")
+		c, ok := s.Get(config.CartKey)
 		if !ok {
 			// 初始化 购物车
 			c = domain.NewCart()
@@ -102,10 +103,38 @@ func GetCartFromSession(w http.ResponseWriter, r *http.Request, callback func(ca
 			callback(cart)
 		}
 		// 将新的购物车进行存储覆盖
-		err := s.Save("cart", c, w, r)
+		err := s.Save(config.CartKey, c, w, r)
 		if err != nil {
-			log.Printf("GetCartFromSession session error for Save: %v", err.Error())
+			log.Printf("GetCartFromSessionAndSave session error for Save: %v", err.Error())
 		}
 	}
 	return cart
+}
+
+// 从 session 中获取 order
+func GetOrderFromSessionAndSave(w http.ResponseWriter, r *http.Request, callback func(order *domain.Order)) *domain.Order {
+	// 使用 session 存储 order 订单
+	s, err := GetSession(r)
+	if err != nil {
+		log.Printf("session error for getSession: %v", err.Error())
+	}
+	var order *domain.Order
+	// 成功生成 session
+	if s != nil {
+		c, ok := s.Get(config.OrderKey)
+		if !ok {
+			return nil
+		}
+		// 调用回调对 order 进行操作
+		order, ok = c.(*domain.Order)
+		if ok && callback != nil {
+			callback(order)
+		}
+		// 将新的购物车进行存储覆盖
+		err := s.Save(config.OrderKey, c, w, r)
+		if err != nil {
+			log.Printf("GetCartFromSessionAndSave session error for Save: %v", err.Error())
+		}
+	}
+	return order
 }

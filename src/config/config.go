@@ -6,8 +6,8 @@ var StaticConfig = map[string]string{
 }
 
 const (
-	AccountKey = "account"
-	ProductKey = "product"
-	CartKey    = "cart"
-	OrderKey   = "order"
+	AccountKey = "Account"
+	ProductKey = "Product"
+	CartKey    = "Cart"
+	OrderKey   = "Order"
 )

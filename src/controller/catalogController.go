@@ -19,10 +19,7 @@ func ViewIndex(c *gin.Context) {
 
 // 跳转 主页
 func ViewMain(c *gin.Context) {
-	a, _ := c.Get("account")
-	c.HTML(http.StatusOK, "main.html", gin.H{
-		"Account": a,
-	})
+	util.ViewWithAccount(c, "main.html", gin.H{})
 }
 
 // 跳转 category 分类页
@@ -38,9 +35,7 @@ func ViewCategory(c *gin.Context) {
 		util.ViewError(c, err)
 		return
 	}
-	a, _ := c.Get("account")
-	c.HTML(http.StatusOK, "category.html", gin.H{
-		"Account":     a,
+	util.ViewWithAccount(c, "category.html", gin.H{
 		"Category":    category,
 		"ProductList": products,
 	})
@@ -71,9 +66,8 @@ func ViewProduct(c *gin.Context) {
 		util.ViewError(c, err)
 		return
 	}
-	a, _ := c.Get("account")
-	c.HTML(http.StatusOK, "product.html", gin.H{
-		"Account":  a,
+
+	util.ViewWithAccount(c, "product.html", gin.H{
 		"Product":  p,
 		"ItemList": itemList,
 	})
@@ -103,9 +97,8 @@ func ViewItem(c *gin.Context) {
 			return
 		}
 	}
-	a, _ := c.Get("account")
-	c.HTML(http.StatusOK, "item.html", gin.H{
-		"Account": a,
+
+	util.ViewWithAccount(c, "item.html", gin.H{
 		"Product": p,
 		"Item":    item,
 	})
@@ -118,9 +111,8 @@ func SearchProductList(c *gin.Context) {
 		util.ViewError(c, err)
 		return
 	}
-	a, _ := c.Get("account")
-	c.HTML(http.StatusOK, "searchProduct.html", gin.H{
-		"Account":     a,
+
+	util.ViewWithAccount(c, "searchProduct.html", gin.H{
 		"ProductList": products,
 	})
 }

@@ -22,6 +22,9 @@ func RegisterRoute(r *gin.Engine) {
 		g.POST("/viewCart", controller.UpdateCart)
 		g.GET("/removeItemFromCart", controller.RemoveItemFromCart)
 		// order
+		g.GET("/viewOrderForm", controller.ViewInitOrder)
+		g.POST("/confirmOrder", controller.ConfirmOrderStep1)
+		g.POST("/confirmShip", controller.ConfirmShip)
 	}
 	// account
 	r.GET("/login", controller.ViewLogin)
@@ -31,6 +34,7 @@ func RegisterRoute(r *gin.Engine) {
 	r.GET("/signOut", controller.SignOut)
 	r.GET("/editAccount", controller.ViewEditAccount)
 	r.POST("/confirmEdit", controller.ConfirmEdit)
+	r.GET("/finalOrder", controller.ConfirmOrderStep2)
 	// cart
 
 }

@@ -107,7 +107,6 @@ func NewAccount(c *gin.Context) {
 	if accountInfo.Password != repeatedPassword {
 		c.HTML(http.StatusOK, "registerForm.html", gin.H{
 			"Message":    "密码和重复密码不一致",
-			"Account":    accountInfo,
 			"Languages":  languages,
 			"Categories": categories,
 		})
@@ -151,7 +150,7 @@ func ConfirmEdit(c *gin.Context) {
 		log.Printf("ConfirmEdit GetSession error: %v", err.Error())
 	}
 	if s != nil {
-		err = s.Save("account", a, c.Writer, c.Request)
+		err = s.Save(config.AccountKey, a, c.Writer, c.Request)
 		if err != nil {
 			log.Printf("ConfirmEdit Save error: %v", err.Error())
 		}
