@@ -8,8 +8,10 @@ import (
 // DAO for line item of an order
 
 const (
-	getLineItemsByOrderIdSQL = `SELECT ORDERID, LINENUM AS lineNumber, ITEMID, QUANTITY, UNITPRICE FROM LINEITEM WHERE ORDERID = ?`
-	insertLineItemSQL        = `INSERT INTO LINEITEM (ORDERID, LINENUM, ITEMID, QUANTITY, UNITPRICE) VALUES (?, ?, ?, ?, ?)`
+	getLineItemsByOrderIdSQL = `SELECT ORDERID as orderid, LINENUM AS linenum, ITEMID as lineitemid, QUANTITY as linequantity, 
+UNITPRICE as unitprice FROM LINEITEM WHERE ORDERID = ?`
+	insertLineItemSQL = `INSERT INTO LINEITEM (ORDERID, LINENUM, ITEMID, QUANTITY, UNITPRICE) 
+VALUES (:orderid, :linenum, :lineitemid, :linequantity, :unitprice)`
 )
 
 // get line item by order id

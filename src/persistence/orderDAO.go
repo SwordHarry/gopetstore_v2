@@ -10,17 +10,27 @@ import (
 // DAO for order
 
 const (
-	getOrderByOrderIdSQL = `select BILLADDR1 AS billAddress1,BILLADDR2 AS billAddress2,BILLCITY,BILLCOUNTRY,BILLSTATE,BILLTOFIRSTNAME,BILLTOLASTNAME,BILLZIP,
-SHIPADDR1 AS shipAddress1,SHIPADDR2 AS shipAddress2,SHIPCITY,SHIPCOUNTRY,SHIPSTATE,SHIPTOFIRSTNAME,SHIPTOLASTNAME,SHIPZIP,CARDTYPE,COURIER,CREDITCARD,
-EXPRDATE AS expiryDate,LOCALE,ORDERDATE,ORDERS.ORDERID,TOTALPRICE,USERID AS username,STATUS FROM ORDERS, ORDERSTATUS 
-WHERE ORDERS.ORDERID = ? AND ORDERS.ORDERID = ORDERSTATUS.ORDERID`
-	getOrdersByUsernameSQL = `SELECT BILLADDR1 AS billAddress1, BILLADDR2 AS billAddress2, BILLCITY, BILLCOUNTRY, BILLSTATE, BILLTOFIRSTNAME, BILLTOLASTNAME, BILLZIP,
-SHIPADDR1 AS shipAddress1, SHIPADDR2 AS shipAddress2, SHIPCITY, SHIPCOUNTRY, SHIPSTATE, SHIPTOFIRSTNAME, SHIPTOLASTNAME, SHIPZIP, CARDTYPE, COURIER, CREDITCARD, EXPRDATE AS expiryDate,LOCALE,
-ORDERDATE, ORDERS.ORDERID, TOTALPRICE, USERID AS username,STATUS FROM ORDERS, ORDERSTATUS WHERE ORDERS.USERID = ? AND ORDERS.ORDERID = ORDERSTATUS.ORDERID ORDER BY ORDERDATE`
-	insertOrderSQL = `INSERT INTO ORDERS (ORDERID, USERID, ORDERDATE, SHIPADDR1, SHIPADDR2, SHIPCITY, SHIPSTATE, SHIPZIP, SHIPCOUNTRY,
-BILLADDR1, BILLADDR2, BILLCITY, BILLSTATE, BILLZIP, BILLCOUNTRY, COURIER, TOTALPRICE, BILLTOFIRSTNAME, BILLTOLASTNAME, SHIPTOFIRSTNAME, SHIPTOLASTNAME, CREDITCARD, EXPRDATE, CARDTYPE, LOCALE) 
-VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-	insertOrderStatusSQL = `INSERT INTO ORDERSTATUS (ORDERID, LINENUM, TIMESTAMP, STATUS) VALUES (?, ?, ?, ?)`
+	getOrderByOrderIdSQL = `select BILLADDR1 AS billaddr1,BILLADDR2 AS billaddr2,BILLCITY as billcity,
+BILLCOUNTRY as billcountry,BILLSTATE as billstate,BILLTOFIRSTNAME as billtofirstname,
+BILLTOLASTNAME as billtolastname,BILLZIP as billzip,SHIPADDR1 AS shipaddr1,SHIPADDR2 AS shipaddr1,SHIPCITY as shipcity,
+SHIPCOUNTRY as shipcountry,SHIPSTATE as shipstate,SHIPTOFIRSTNAME as shiptofirstname,SHIPTOLASTNAME as shiptolastname,
+SHIPZIP as shipzip,CARDTYPE as cardtype,COURIER as courier,CREDITCARD as creditcard,EXPRDATE AS expdate,LOCALE as locale,
+ORDERDATE as orderdate,ORDERS.ORDERID as orderid,TOTALPRICE as totalprice,USERID AS userid,STATUS as status 
+FROM ORDERS, ORDERSTATUS WHERE ORDERS.ORDERID = ? AND ORDERS.ORDERID = ORDERSTATUS.ORDERID`
+	getOrdersByUsernameSQL = `SELECT BILLADDR1 AS billaddr1, BILLADDR2 AS billaddr2, BILLCITY as billcity, 
+BILLCOUNTRY as billcountry, BILLSTATE as billstate, BILLTOFIRSTNAME as billtofirstname, BILLTOLASTNAME as billtolastname, 
+BILLZIP as billzip,SHIPADDR1 AS shipaddr1, SHIPADDR2 AS shipaddr2, SHIPCITY as shipcity, SHIPCOUNTRY as shipcountry, 
+SHIPSTATE as shipstate, SHIPTOFIRSTNAME as shiptofirstname, SHIPTOLASTNAME as shiptolastname, SHIPZIP as shipzip, 
+CARDTYPE as cardtype, COURIER as courier, CREDITCARD as creditcard, EXPRDATE AS expdate,LOCALE as locale,
+ORDERDATE as orderdate, ORDERS.ORDERID as orderid, TOTALPRICE as totalprice, USERID AS userid,STATUS as status 
+FROM ORDERS, ORDERSTATUS WHERE ORDERS.USERID = ? AND ORDERS.ORDERID = ORDERSTATUS.ORDERID ORDER BY ORDERDATE`
+	insertOrderSQL = `INSERT INTO ORDERS (ORDERID, USERID, ORDERDATE, SHIPADDR1, SHIPADDR2, SHIPCITY, SHIPSTATE, 
+SHIPZIP, SHIPCOUNTRY, BILLADDR1, BILLADDR2, BILLCITY, BILLSTATE, BILLZIP, BILLCOUNTRY, COURIER, TOTALPRICE, 
+BILLTOFIRSTNAME, BILLTOLASTNAME, SHIPTOFIRSTNAME, SHIPTOLASTNAME, CREDITCARD, EXPRDATE, CARDTYPE, LOCALE) 
+VALUES(:orderid, :userid, :orderdate, :shipaddr1, :shipaddr2, :shipcity, :shipstate, :shipzip, :shipcountry, 
+:billaddr1, :billaddr2, :billcity, :billstate, :billzip, :billcountry, :courier, :totalprice, :billtofirstname, :billtolastname, 
+:shiptofirstname, :shiptolastname, :creditcard, :expdate, :cardtype, :locale)`
+	insertOrderStatusSQL = `INSERT INTO ORDERSTATUS (ORDERID, LINENUM, TIMESTAMP, STATUS) VALUES (:orderid, :totallinenum, :orderdate, :status)`
 )
 
 // get order by order id
@@ -79,21 +89,21 @@ func InsertOrder(o *domain.Order) error {
 			tx.Rollback()
 			return err
 		}
-
+		for _, li := range o.LineItems {
+			li.OrderId = o.OrderId
+			o.TotalLineNum += li.LineNumber
+			// insert line item
+			_, err := tx.NamedExec(insertLineItemSQL, li)
+			if err != nil {
+				tx.Rollback()
+				return err
+			}
+		}
 		// insert order status
 		_, err = tx.NamedExec(insertOrderStatusSQL, o)
 		if err != nil {
 			tx.Rollback()
 			return err
-		}
-		for _, li := range o.LineItems {
-			li.OrderId = o.OrderId
-			// insert line item
-			_, err := tx.NamedExec(insertLineItemSQL, li)
-			if err != nil {
-				log.Printf("service InsertOrder InsertLineItem error: %v", err.Error())
-				continue
-			}
 		}
 		return nil
 	})

@@ -4,8 +4,20 @@ import (
 	"github.com/gin-gonic/gin"
 	"gopetstore_v2/src/config"
 	"gopetstore_v2/src/domain"
+	"gopetstore_v2/src/service"
 	"gopetstore_v2/src/util"
+	"log"
 	"net/http"
+	"strconv"
+)
+
+// file name
+const (
+	initOrderFile    = "initOrder.html"
+	shipFormFile     = "shipForm.html"
+	confirmOrderFile = "confirmOrder.html"
+	viewOrderFile    = "viewOrder.html"
+	listOrdersFile   = "listOrders.html"
 )
 
 // view init order
@@ -25,7 +37,7 @@ func ViewInitOrder(c *gin.Context) {
 			return
 		}
 	}
-	c.HTML(http.StatusOK, "initOrder.html", gin.H{
+	c.HTML(http.StatusOK, initOrderFile, gin.H{
 		"Account":         account,
 		"Order":           o,
 		"CreditCardTypes": []string{o.CardType},
@@ -52,10 +64,10 @@ func ConfirmOrderStep1(c *gin.Context) {
 	}
 	if len(c.PostForm("shippingAddressRequired")) > 0 {
 		// view shipForm
-		util.ViewWithAccount(c, "shipForm.html", dataMap)
+		util.ViewWithAccount(c, shipFormFile, dataMap)
 	} else {
 		// view confirmOrder
-		util.ViewWithAccount(c, "confirmOrder.html", dataMap)
+		util.ViewWithAccount(c, confirmOrderFile, dataMap)
 	}
 }
 
@@ -72,7 +84,7 @@ func ConfirmShip(c *gin.Context) {
 		o.ShipZip = c.PostForm("shipZip")
 		o.ShipCountry = c.PostForm("shipCountry")
 	})
-	util.ViewWithAccount(c, "confirmOrder.html", gin.H{
+	util.ViewWithAccount(c, confirmOrderFile, gin.H{
 		"Order": order,
 	})
 }
@@ -80,5 +92,54 @@ func ConfirmShip(c *gin.Context) {
 // create the final order
 func ConfirmOrderStep2(c *gin.Context) {
 	order := util.GetOrderFromSessionAndSave(c.Writer, c.Request, nil)
+	err := service.InsertOrder(order)
+	if err != nil {
+		util.ViewError(c, err)
+		return
+	}
+	// 清空购物车
+	s, err := util.GetSession(c.Request)
+	if err != nil {
+		util.ViewError(c, err)
+		return
+	}
+	err = s.Del(config.CartKey, c.Writer, c.Request)
+	if err != nil {
+		util.ViewError(c, err)
+		return
+	}
+	util.ViewWithAccount(c, viewOrderFile, gin.H{
+		"Order": order,
+	})
+}
 
+// list orders
+func ListOrders(c *gin.Context) {
+	a := util.GetAccountFromSession(c.Request)
+	log.Print(a.UserName)
+	orders, err := service.GetOrdersByUserName(a.UserName)
+	if err != nil {
+		util.ViewError(c, err)
+	}
+	util.ViewWithAccount(c, listOrdersFile, gin.H{
+		"OrderList": orders,
+	})
+}
+
+// check order
+func CheckOrder(c *gin.Context) {
+	orderIdStr := util.GetURLParam(c, "orderId")[0]
+	orderId, err := strconv.Atoi(orderIdStr)
+	if err != nil {
+		util.ViewError(c, err)
+		return
+	}
+	o, err := service.GetOrderByOrderId(orderId)
+	if err != nil {
+		util.ViewError(c, err)
+		return
+	}
+	util.ViewWithAccount(c, viewOrderFile, gin.H{
+		"Order": o,
+	})
 }

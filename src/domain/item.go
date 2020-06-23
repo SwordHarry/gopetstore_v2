@@ -12,7 +12,6 @@ type Item struct {
 	Attr3      string  `db:"attr3"`
 	Attr4      string  `db:"attr4"`
 	Attr5      string  `db:"attr5"`
-	//Product    *Product
+	Quantity   int     `db:"quantity"`
 	*Product
-	Quantity int `db:"quantity"`
 }

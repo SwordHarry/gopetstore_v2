@@ -2,11 +2,11 @@ package domain
 
 // 订单项
 type LineItem struct {
-	OrderId    int
-	LineNumber int
-	Quantity   int
-	ItemId     string
-	UnitPrice  float32
+	OrderId    int     `db:"orderid"`
+	LineNumber int     `db:"linenum"`
+	Quantity   int     `db:"linequantity"`
+	ItemId     string  `db:"lineitemid"`
+	UnitPrice  float32 `db:"unitprice"`
 	Total      float32
 	*Item
 }

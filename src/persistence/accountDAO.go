@@ -120,55 +120,9 @@ func InsertAccount(a *domain.Account) error {
 
 }
 
-//
-//// 插入 profile 数据表
-//func InsertProfile(a *domain.Account) error {
-//	d, err := util.GetConnection()
-//	defer func() {
-//		_ = d.Close()
-//	}()
-//	if err != nil {
-//		return err
-//	}
-//	r, err := d.NamedExec(insertProfileSQL, a)
-//	if err != nil {
-//		return err
-//	}
-//	row, err := r.RowsAffected()
-//	if err != nil {
-//		return err
-//	}
-//	if row == 0 {
-//		return errors.New("can not insert profile by this user name:" + a.UserName)
-//	}
-//	return nil
-//}
-//
-//// 插入 signon 数据表
-//func InsertSignOn(a *domain.Account) error {
-//	d, err := util.GetConnection()
-//	defer func() {
-//		_ = d.Close()
-//	}()
-//	if err != nil {
-//		return err
-//	}
-//	r, err := d.NamedExec(insertSigOnSQL, a)
-//	if err != nil {
-//		return err
-//	}
-//	row, err := r.RowsAffected()
-//	if err != nil {
-//		return err
-//	}
-//	if row == 0 {
-//		return errors.New("can not insert sign on by this user name:" + a.UserName)
-//	}
-//	return nil
-//}
-
-// update
+// update account
 func UpdateAccount(a *domain.Account) error {
+	// 使用事务更新用户信息，出错则回滚
 	return util.ExecTransaction(func(tx *sqlx.Tx) error {
 		_, err := tx.NamedExec(updateAccountSQL, a)
 		if err != nil {
@@ -188,36 +142,3 @@ func UpdateAccount(a *domain.Account) error {
 		return nil
 	})
 }
-
-//
-//func UpdateProfile(a *domain.Account) error {
-//	d, err := util.GetConnection()
-//	if err != nil {
-//		return err
-//	}
-//	r, err := d.NamedExec(updateProfileSQL, a)
-//	if err != nil {
-//		return err
-//	}
-//	_, err = r.RowsAffected()
-//	if err != nil {
-//		return err
-//	}
-//	return nil
-//}
-//
-//func UpdateSignOn(a *domain.Account) error {
-//	d, err := util.GetConnection()
-//	if err != nil {
-//		return err
-//	}
-//	r, err := d.NamedExec(updateSigOnSQL, a)
-//	if err != nil {
-//		return err
-//	}
-//	_, err = r.RowsAffected()
-//	if err != nil {
-//		return err
-//	}
-//	return nil
-//}

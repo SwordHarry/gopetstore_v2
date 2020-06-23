@@ -131,9 +131,11 @@
                             </td>
                             <td>
                                 {{if .Item}}
-                                    {{range .Item.AttributeList}}
-                                        {{.}}
-                                    {{end}}
+                                    {{.Item.Attr1}}
+                                    {{.Item.Attr2}}
+                                    {{.Item.Attr3}}
+                                    {{.Item.Attr4}}
+                                    {{.Item.Attr5}}
                                     {{.Item.Product.Name}}
                                 {{else}}
                                     <i>

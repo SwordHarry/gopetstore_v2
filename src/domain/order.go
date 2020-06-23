@@ -7,36 +7,38 @@ import (
 
 type Order struct {
 	// order
-	OrderId   int
-	OrderDate time.Time
-	UserName  string
+	OrderId   int       `db:"orderid"`
+	OrderDate time.Time `db:"orderdate"`
+	UserName  string    `db:"userid"`
 	LineItems []*LineItem
 	// ship
-	ShipAddress1    string
-	ShipAddress2    string
-	ShipCity        string
-	ShipState       string
-	ShipZip         string
-	ShipCountry     string
-	ShipToFirstName string
-	ShipToLastName  string
+	ShipAddress1    string `db:"shipaddr1"`
+	ShipAddress2    string `db:"shipaddr2"`
+	ShipCity        string `db:"shipcity"`
+	ShipState       string `db:"shipstate"`
+	ShipZip         string `db:"shipzip"`
+	ShipCountry     string `db:"shipcountry"`
+	ShipToFirstName string `db:"shiptofirstname"`
+	ShipToLastName  string `db:"shiptolastname"`
 	// bill
-	BillAddress1    string
-	BillAddress2    string
-	BillCity        string
-	BillState       string
-	BillZip         string
-	BillCountry     string
-	BillToFirstName string
-	BillToLastName  string
+	BillAddress1    string `db:"billaddr1"`
+	BillAddress2    string `db:"billaddr2"`
+	BillCity        string `db:"billcity"`
+	BillState       string `db:"billstate"`
+	BillZip         string `db:"billzip"`
+	BillCountry     string `db:"billcountry"`
+	BillToFirstName string `db:"billtofirstname"`
+	BillToLastName  string `db:"billtolastname"`
 	// other
-	Courier    string
-	TotalPrice float32
-	CreditCard string
-	ExpiryDate string
-	CardType   string
-	Locale     string
-	Status     string
+	Courier    string  `db:"courier"`
+	TotalPrice float32 `db:"totalprice"`
+	CreditCard string  `db:"creditcard"`
+	ExpiryDate string  `db:"expdate"`
+	CardType   string  `db:"cardtype"`
+	Locale     string  `db:"locale"`
+	Status     string  `db:"status"`
+	// 总货品数
+	TotalLineNum int `db:"totallinenum"`
 }
 
 // 注册序列化

@@ -10,6 +10,15 @@ import (
 	"net/http"
 )
 
+// file name
+const (
+	signInFormFile      = "signInForm.html"
+	registerFormFile    = "registerForm.html"
+	editAccountFormFile = "editAccountForm.html"
+	mainFile            = "main.html"
+)
+
+// view select value
 var (
 	languages = []string{
 		"english",
@@ -27,12 +36,12 @@ var (
 // view
 // view login form
 func ViewLogin(c *gin.Context) {
-	c.HTML(http.StatusOK, "signInForm.html", gin.H{})
+	c.HTML(http.StatusOK, signInFormFile, gin.H{})
 }
 
 // view register form
 func ViewRegister(c *gin.Context) {
-	c.HTML(http.StatusOK, "registerForm.html", gin.H{
+	c.HTML(http.StatusOK, registerFormFile, gin.H{
 		"Languages":  languages,
 		"Categories": categories,
 	})
@@ -41,7 +50,7 @@ func ViewRegister(c *gin.Context) {
 // view edit account form
 func ViewEditAccount(c *gin.Context) {
 	a := util.GetAccountFromSession(c.Request)
-	c.HTML(http.StatusOK, "editAccountForm.html", gin.H{
+	c.HTML(http.StatusOK, editAccountFormFile, gin.H{
 		"Account":    a,
 		"Languages":  languages,
 		"Categories": categories,
@@ -71,11 +80,11 @@ func Login(c *gin.Context) {
 				return
 			}
 		}
-		c.HTML(http.StatusOK, "main.html", gin.H{
+		c.HTML(http.StatusOK, mainFile, gin.H{
 			"Account": a,
 		})
 	} else {
-		c.HTML(http.StatusOK, "signInForm.html", gin.H{
+		c.HTML(http.StatusOK, signInFormFile, gin.H{
 			"Message": "登录失败，账号或密码错误",
 		})
 	}
@@ -97,7 +106,7 @@ func SignOut(c *gin.Context) {
 			return
 		}
 	}
-	c.HTML(http.StatusOK, "main.html", gin.H{})
+	c.HTML(http.StatusOK, mainFile, gin.H{})
 }
 
 // register
@@ -105,7 +114,7 @@ func NewAccount(c *gin.Context) {
 	accountInfo := getAccountFromInfoForm(c)
 	repeatedPassword := c.PostForm("repeatedPassword")
 	if accountInfo.Password != repeatedPassword {
-		c.HTML(http.StatusOK, "registerForm.html", gin.H{
+		c.HTML(http.StatusOK, registerFormFile, gin.H{
 			"Message":    "密码和重复密码不一致",
 			"Languages":  languages,
 			"Categories": categories,
@@ -123,12 +132,12 @@ func NewAccount(c *gin.Context) {
 		if err != nil {
 			util.ViewError(c, err)
 		} else {
-			c.HTML(http.StatusOK, "signInForm.html", gin.H{
+			c.HTML(http.StatusOK, signInFormFile, gin.H{
 				"Message": "注册成功",
 			})
 		}
 	} else {
-		c.HTML(http.StatusOK, "registerForm.html", gin.H{
+		c.HTML(http.StatusOK, registerFormFile, gin.H{
 			"Message":    "该用户名已存在",
 			"Languages":  languages,
 			"Categories": categories,
@@ -155,7 +164,7 @@ func ConfirmEdit(c *gin.Context) {
 			log.Printf("ConfirmEdit Save error: %v", err.Error())
 		}
 	}
-	c.HTML(http.StatusOK, "editAccountForm.html", gin.H{
+	c.HTML(http.StatusOK, editAccountFormFile, gin.H{
 		"Message": "修改成功",
 		"Account": a,
 	})

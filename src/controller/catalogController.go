@@ -11,15 +11,24 @@ import (
 	"net/http"
 )
 
+// file name
+const (
+	indexFile         = "index.html"
+	categoryFile      = "category.html"
+	productFile       = "product.html"
+	itemFile          = "item.html"
+	searchProductFile = "searchProduct.html"
+)
+
 // about View
 // 欢迎页
 func ViewIndex(c *gin.Context) {
-	c.HTML(http.StatusOK, "index.html", nil)
+	c.HTML(http.StatusOK, indexFile, nil)
 }
 
 // 跳转 主页
 func ViewMain(c *gin.Context) {
-	util.ViewWithAccount(c, "main.html", gin.H{})
+	util.ViewWithAccount(c, mainFile, gin.H{})
 }
 
 // 跳转 category 分类页
@@ -35,7 +44,7 @@ func ViewCategory(c *gin.Context) {
 		util.ViewError(c, err)
 		return
 	}
-	util.ViewWithAccount(c, "category.html", gin.H{
+	util.ViewWithAccount(c, categoryFile, gin.H{
 		"Category":    category,
 		"ProductList": products,
 	})
@@ -67,7 +76,7 @@ func ViewProduct(c *gin.Context) {
 		return
 	}
 
-	util.ViewWithAccount(c, "product.html", gin.H{
+	util.ViewWithAccount(c, productFile, gin.H{
 		"Product":  p,
 		"ItemList": itemList,
 	})
@@ -98,7 +107,7 @@ func ViewItem(c *gin.Context) {
 		}
 	}
 
-	util.ViewWithAccount(c, "item.html", gin.H{
+	util.ViewWithAccount(c, itemFile, gin.H{
 		"Product": p,
 		"Item":    item,
 	})
@@ -112,7 +121,7 @@ func SearchProductList(c *gin.Context) {
 		return
 	}
 
-	util.ViewWithAccount(c, "searchProduct.html", gin.H{
+	util.ViewWithAccount(c, searchProductFile, gin.H{
 		"ProductList": products,
 	})
 }

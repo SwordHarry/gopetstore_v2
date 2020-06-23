@@ -9,12 +9,17 @@ import (
 	"strconv"
 )
 
+// file name
+const (
+	cartFile = "cart.html"
+)
+
 // 购物车控制器
 
 // view cart
 func ViewCart(c *gin.Context) {
 	cart := util.GetCartFromSessionAndSave(c.Writer, c.Request, nil)
-	util.ViewWithAccount(c, "cart.html", gin.H{
+	util.ViewWithAccount(c, cartFile, gin.H{
 		"Cart": cart,
 	})
 }
@@ -35,7 +40,7 @@ func UpdateCart(c *gin.Context) {
 			cart.SetQuantityByItemId(ci.ItemId, quantity)
 		}
 	})
-	util.ViewWithAccount(c, "cart.html", gin.H{
+	util.ViewWithAccount(c, cartFile, gin.H{
 		"Cart": cart,
 	})
 }
@@ -53,7 +58,7 @@ func AddItemToCart(c *gin.Context) {
 		cart.AddItem(i, flag)
 	})
 
-	util.ViewWithAccount(c, "cart.html", gin.H{
+	util.ViewWithAccount(c, cartFile, gin.H{
 		"Cart": cart,
 	})
 }
@@ -64,7 +69,7 @@ func RemoveItemFromCart(c *gin.Context) {
 	cart := util.GetCartFromSessionAndSave(c.Writer, c.Request, func(cart *domain.Cart) {
 		cart.RemoveItemById(itemId)
 	})
-	util.ViewWithAccount(c, "cart.html", gin.H{
+	util.ViewWithAccount(c, cartFile, gin.H{
 		"Cart": cart,
 	})
 }

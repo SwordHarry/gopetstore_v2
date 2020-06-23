@@ -16,8 +16,8 @@ NAME AS name,DESCN AS descn,CATEGORY AS category,STATUS as status,
 IFNULL(ATTR1, "") AS attr1,IFNULL(ATTR2, "") AS attr2,IFNULL(ATTR3, "") AS attr3,
 IFNULL(ATTR4, "") AS attr4,IFNULL(ATTR5, "") AS attr5 FROM ITEM I, PRODUCT P 
 WHERE P.PRODUCTID = I.PRODUCTID AND I.PRODUCTID = ?`
-const getInventoryByItemIdSQL = `SELECT QTY AS QUANTITY FROM INVENTORY WHERE ITEMID = ?`
-const updateInventoryByItemIdSQl = `UPDATE INVENTORY SET QTY = QTY - ? WHERE ITEMID = ?`
+const getInventoryByItemIdSQL = `SELECT QTY AS quantity FROM INVENTORY WHERE ITEMID = ?`
+const updateInventoryByItemIdSQl = `UPDATE INVENTORY SET QTY = QTY - :linequantity WHERE ITEMID = :lineitemid`
 
 // get item by id
 func GetItem(itemId string) (*domain.Item, error) {
@@ -29,6 +29,8 @@ func GetItem(itemId string) (*domain.Item, error) {
 		return nil, err
 	}
 	i := new(domain.Item)
+	p := new(domain.Product)
+	i.Product = p
 	err = d.Get(i, getItemByIdSQL, itemId)
 	if err != nil {
 		return nil, err

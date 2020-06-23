@@ -8,7 +8,7 @@ import (
 
 const (
 	getSequenceSQL    = `SELECT name, nextid FROM SEQUENCE WHERE NAME = ?`
-	updateSequenceSQL = `UPDATE SEQUENCE SET NEXTID = ? WHERE NAME = ?`
+	updateSequenceSQL = `UPDATE SEQUENCE SET NEXTID = :nextid WHERE NAME = :name`
 )
 
 func GetSequence(name string) (*domain.Sequence, error) {
