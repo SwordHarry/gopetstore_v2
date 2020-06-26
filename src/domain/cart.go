@@ -83,7 +83,7 @@ func (c *Cart) SetQuantityByItemId(itemId string, quantity int) {
 }
 
 // 获取购物车总价格
-func (c *Cart) GetSubTotal() (subTotal float32) {
+func (c *Cart) GetSubTotal() (subTotal float64) {
 	for _, ci := range c.ItemList {
 		ci.CalculateTotal()
 		subTotal += ci.Total

@@ -6,8 +6,8 @@ type LineItem struct {
 	LineNumber int     `db:"linenum"`
 	Quantity   int     `db:"linequantity"`
 	ItemId     string  `db:"lineitemid"`
-	UnitPrice  float32 `db:"unitprice"`
-	Total      float32
+	UnitPrice  float64 `db:"unitprice"`
+	Total      float64
 	*Item
 }
 
@@ -24,6 +24,6 @@ func NewLineItem(lineNum int, cartItem *CartItem) *LineItem {
 
 func (li *LineItem) CalculateTotal() {
 	if li != nil && li.Quantity > 0 {
-		li.Total = li.UnitPrice * float32(li.Quantity)
+		li.Total = li.UnitPrice * float64(li.Quantity)
 	}
 }

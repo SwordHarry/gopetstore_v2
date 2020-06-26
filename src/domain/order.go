@@ -31,7 +31,7 @@ type Order struct {
 	BillToLastName  string `db:"billtolastname"`
 	// other
 	Courier    string  `db:"courier"`
-	TotalPrice float32 `db:"totalprice"`
+	TotalPrice float64 `db:"totalprice"`
 	CreditCard string  `db:"creditcard"`
 	ExpiryDate string  `db:"expdate"`
 	CardType   string  `db:"cardtype"`
