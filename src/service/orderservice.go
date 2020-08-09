@@ -51,12 +51,13 @@ func InsertOrder(o *domain.Order) error {
 	return persistence.InsertOrder(o)
 }
 
+var serviceMutex sync.Mutex
+
 // update the sequence and next id
 func getNextId(name string) (int, error) {
-	// 在并发场景下，这里需要锁
-	var mutex sync.Mutex
-	mutex.Lock()
-	defer mutex.Unlock()
+	// 在并发场景下，这里需要锁=
+	serviceMutex.Lock()
+	defer serviceMutex.Unlock()
 	s, err := persistence.GetSequence(name)
 	if err != nil {
 		return -1, err
