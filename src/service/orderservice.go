@@ -55,7 +55,7 @@ var serviceMutex sync.Mutex
 
 // update the sequence and next id
 func getNextId(name string) (int, error) {
-	// 在并发场景下，这里需要锁=
+	// 在并发场景下，这里需要锁
 	serviceMutex.Lock()
 	defer serviceMutex.Unlock()
 	s, err := persistence.GetSequence(name)

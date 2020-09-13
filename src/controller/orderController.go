@@ -2,8 +2,8 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"gopetstore_v2/src/config"
 	"gopetstore_v2/src/domain"
+	"gopetstore_v2/src/global"
 	"gopetstore_v2/src/service"
 	"gopetstore_v2/src/util"
 	"log"
@@ -31,7 +31,7 @@ func ViewInitOrder(c *gin.Context) {
 		return
 	}
 	if s != nil {
-		err = s.Save(config.OrderKey, o, c.Writer, c.Request)
+		err = s.Save(global.OrderKey, o, c.Writer, c.Request)
 		if err != nil {
 			util.ViewError(c, err)
 			return
@@ -103,7 +103,7 @@ func ConfirmOrderStep2(c *gin.Context) {
 		util.ViewError(c, err)
 		return
 	}
-	err = s.Del(config.CartKey, c.Writer, c.Request)
+	err = s.Del(global.CartKey, c.Writer, c.Request)
 	if err != nil {
 		util.ViewError(c, err)
 		return

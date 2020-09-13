@@ -2,7 +2,7 @@ package util
 
 import (
 	"github.com/gin-gonic/gin"
-	"gopetstore_v2/src/config"
+	"gopetstore_v2/src/global"
 	"html/template"
 	"net/http"
 )
@@ -16,7 +16,7 @@ func GetURLParam(c *gin.Context, key string) []string {
 
 // 发生错误时的渲染
 func ViewError(c *gin.Context, err error) {
-	a, _ := c.Get(config.AccountKey)
+	a, _ := c.Get(global.AccountKey)
 	c.HTML(http.StatusInternalServerError, "error.html", gin.H{
 		"Account": a,
 		"Message": err.Error(),
@@ -30,7 +30,7 @@ func UnEscape(s string) template.HTML {
 
 // 携带用户信息进行渲染
 func ViewWithAccount(c *gin.Context, viewFile string, dataMap map[string]interface{}) {
-	a, _ := c.Get(config.AccountKey)
-	dataMap[config.AccountKey] = a
+	a, _ := c.Get(global.AccountKey)
+	dataMap[global.AccountKey] = a
 	c.HTML(http.StatusOK, viewFile, dataMap)
 }

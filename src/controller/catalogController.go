@@ -3,8 +3,8 @@ package controller
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"gopetstore_v2/src/config"
 	"gopetstore_v2/src/domain"
+	"gopetstore_v2/src/global"
 	"gopetstore_v2/src/service"
 	"gopetstore_v2/src/util"
 	"log"
@@ -60,7 +60,7 @@ func ViewProduct(c *gin.Context) {
 		log.Printf("ViewProduct get session error: %v", err.Error())
 	}
 	if s != nil {
-		err = s.Save(config.ProductKey, p, c.Writer, c.Request)
+		err = s.Save(global.ProductKey, p, c.Writer, c.Request)
 		if err != nil {
 			log.Printf("ViewProduct session save error: %v", err.Error())
 		}
@@ -98,7 +98,7 @@ func ViewItem(c *gin.Context) {
 	}
 	var p *domain.Product
 	if s != nil {
-		r, ok := s.Get(config.ProductKey)
+		r, ok := s.Get(global.ProductKey)
 		if ok {
 			p = r.(*domain.Product)
 		} else {

@@ -1,0 +1,12 @@
+Server:
+  Port: 8082
+Database:
+  UserName: root
+  Password: root
+  DriverName: mysql
+  DBName: gopetstore
+  Charset: utf8
+  Local: Local
+  Domain: localhost
+  Port: 3306
+  ParseTime: true

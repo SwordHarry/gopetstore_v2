@@ -2,8 +2,8 @@ package util
 
 import (
 	"github.com/gorilla/sessions"
-	"gopetstore_v2/src/config"
 	"gopetstore_v2/src/domain"
+	"gopetstore_v2/src/global"
 	"log"
 	"net/http"
 )
@@ -66,7 +66,7 @@ func GetAccountFromSession(r *http.Request) *domain.Account {
 		return nil
 	}
 	if s != nil {
-		r, ok := s.Get(config.AccountKey)
+		r, ok := s.Get(global.AccountKey)
 		if !ok {
 			// account 不存在，已登出
 			return nil
@@ -92,7 +92,7 @@ func GetCartFromSessionAndSave(w http.ResponseWriter, r *http.Request, callback 
 	var cart *domain.Cart
 	// 成功生成 session
 	if s != nil {
-		c, ok := s.Get(config.CartKey)
+		c, ok := s.Get(global.CartKey)
 		if !ok {
 			// 初始化 购物车
 			c = domain.NewCart()
@@ -103,7 +103,7 @@ func GetCartFromSessionAndSave(w http.ResponseWriter, r *http.Request, callback 
 			callback(cart)
 		}
 		// 将新的购物车进行存储覆盖
-		err := s.Save(config.CartKey, c, w, r)
+		err := s.Save(global.CartKey, c, w, r)
 		if err != nil {
 			log.Printf("GetCartFromSessionAndSave session error for Save: %v", err.Error())
 		}
@@ -121,7 +121,7 @@ func GetOrderFromSessionAndSave(w http.ResponseWriter, r *http.Request, callback
 	var order *domain.Order
 	// 成功生成 session
 	if s != nil {
-		c, ok := s.Get(config.OrderKey)
+		c, ok := s.Get(global.OrderKey)
 		if !ok {
 			return nil
 		}
@@ -131,7 +131,7 @@ func GetOrderFromSessionAndSave(w http.ResponseWriter, r *http.Request, callback
 			callback(order)
 		}
 		// 将新的购物车进行存储覆盖
-		err := s.Save(config.OrderKey, c, w, r)
+		err := s.Save(global.OrderKey, c, w, r)
 		if err != nil {
 			log.Printf("GetCartFromSessionAndSave session error for Save: %v", err.Error())
 		}

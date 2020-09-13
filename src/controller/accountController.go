@@ -2,8 +2,8 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"gopetstore_v2/src/config"
 	"gopetstore_v2/src/domain"
+	"gopetstore_v2/src/global"
 	"gopetstore_v2/src/service"
 	"gopetstore_v2/src/util"
 	"log"
@@ -74,7 +74,7 @@ func Login(c *gin.Context) {
 			return
 		}
 		if s != nil {
-			err = s.Save(config.AccountKey, a, c.Writer, c.Request)
+			err = s.Save(global.AccountKey, a, c.Writer, c.Request)
 			if err != nil {
 				util.ViewError(c, err)
 				return
@@ -98,9 +98,9 @@ func SignOut(c *gin.Context) {
 		return
 	}
 	if s != nil {
-		err = s.Del(config.AccountKey, c.Writer, c.Request)
-		err = s.Del(config.CartKey, c.Writer, c.Request)
-		err = s.Del(config.OrderKey, c.Writer, c.Request)
+		err = s.Del(global.AccountKey, c.Writer, c.Request)
+		err = s.Del(global.CartKey, c.Writer, c.Request)
+		err = s.Del(global.OrderKey, c.Writer, c.Request)
 		if err != nil {
 			util.ViewError(c, err)
 			return
@@ -159,7 +159,7 @@ func ConfirmEdit(c *gin.Context) {
 		log.Printf("ConfirmEdit GetSession error: %v", err.Error())
 	}
 	if s != nil {
-		err = s.Save(config.AccountKey, a, c.Writer, c.Request)
+		err = s.Save(global.AccountKey, a, c.Writer, c.Request)
 		if err != nil {
 			log.Printf("ConfirmEdit Save error: %v", err.Error())
 		}
